@@ -27,11 +27,11 @@ module.exports = class Newrelic extends TransportStream {
      * @param {Object} info
      * @param {function} callback
      */
-    log(info, callback) {
+    log(level, msg, customAttributes = {}, callback) {
         setImmediate(() => this.emit('logged', info));
 
-        if (info[LEVEL] === 'error') {
-            this.newrelic.noticeError(info[MESSAGE], typeof info.message === 'object' && info.message);
+        if (level === 'error') {
+            this.newrelic.noticeError(msg, customAttributes);
         }
 
         callback();
