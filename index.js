@@ -28,10 +28,17 @@ module.exports = class Newrelic extends TransportStream {
      * @param {function} callback
      */
     log(level, msg, customAttributes = {}, callback) {
-        setImmediate(() => this.emit('logged', { level, msg, customAttributes }));
+        const className = (customAttributes.event || 'Error').split('-').map(str => str.charAt(0).toUpperCase() + str.slice(1)).join('')
+
+        const data = {
+            ...customAttributes,
+            className
+        }
+
+        setImmediate(() => this.emit('logged', { level, msg, data }));
 
         if (level === 'error') {
-            this.newrelic.noticeError(msg, customAttributes);
+            this.newrelic.noticeError(msg, data);
         }
 
         callback();
